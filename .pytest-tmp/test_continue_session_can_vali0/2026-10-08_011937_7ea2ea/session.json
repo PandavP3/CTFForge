@@ -1,0 +1,50 @@
+{
+  "session_id": "2026-10-08_011937_7ea2ea",
+  "created_at": "2026-10-07T19:49:37.912531+00:00",
+  "status": "SOLVED",
+  "original_file": "input\\input.txt",
+  "source": "text input",
+  "category": "crypto",
+  "flag_format": "flag\\{[^}]+\\}",
+  "operations": [
+    {
+      "operation": "user-supplied continuation",
+      "output": "user-result-01.txt"
+    }
+  ],
+  "artifacts": [],
+  "blocked_operations": [],
+  "recommendations": [],
+  "user_results": [
+    {
+      "path": "evidence\\user-result-01.txt",
+      "length": 30
+    }
+  ],
+  "flags": [
+    "flag{resumed}"
+  ],
+  "flag_prefix": null,
+  "file_type": "Unknown or text data",
+  "hashes": {
+    "md5": "88f01f1c4a2f7b57f8d92848fa63b6b9",
+    "sha1": "2bf2a6940fa08930747d01b0a6593ed7b09b0763",
+    "sha256": "ed135cbdbcfc3149f9ca3e06a0505ab901204ead84785f1302cb4e3662e18ecb"
+  },
+  "evidence": [
+    {
+      "description": "Input identified and hashed",
+      "source": "text input",
+      "value": {
+        "file_type": "Unknown or text data",
+        "hashes": {
+          "md5": "88f01f1c4a2f7b57f8d92848fa63b6b9",
+          "sha1": "2bf2a6940fa08930747d01b0a6593ed7b09b0763",
+          "sha256": "ed135cbdbcfc3149f9ca3e06a0505ab901204ead84785f1302cb4e3662e18ecb"
+        }
+      },
+      "observed_at": "2026-10-07T19:49:37.925266+00:00"
+    }
+  ],
+  "report": "reports\\report.json"
+}

@@ -1,0 +1,38 @@
+{
+  "session_id": "2026-10-08_011937_0d8a7a",
+  "created_at": "2026-10-07T19:49:37.882322+00:00",
+  "status": "UNSOLVED",
+  "original_file": "input\\input.txt",
+  "source": "text input",
+  "category": "misc",
+  "flag_format": "CTF\\{.*\\}",
+  "operations": [],
+  "artifacts": [],
+  "blocked_operations": [],
+  "recommendations": [],
+  "user_results": [],
+  "flags": [],
+  "flag_prefix": null,
+  "file_type": "Unknown or text data",
+  "hashes": {
+    "md5": "b0f5f283040222902942d63b99dc87d4",
+    "sha1": "7aeb6401796bcc9e75e6d20623d6f9693c4a3dbe",
+    "sha256": "98e2140485ad2c8f64a36a4c9238ca4d4a9c8ecd80c6d25ec52e4d64db3b8e73"
+  },
+  "evidence": [
+    {
+      "description": "Input identified and hashed",
+      "source": "text input",
+      "value": {
+        "file_type": "Unknown or text data",
+        "hashes": {
+          "md5": "b0f5f283040222902942d63b99dc87d4",
+          "sha1": "7aeb6401796bcc9e75e6d20623d6f9693c4a3dbe",
+          "sha256": "98e2140485ad2c8f64a36a4c9238ca4d4a9c8ecd80c6d25ec52e4d64db3b8e73"
+        }
+      },
+      "observed_at": "2026-10-07T19:49:37.894165+00:00"
+    }
+  ],
+  "report": "reports\\report.json"
+}

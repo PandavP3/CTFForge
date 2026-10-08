@@ -1,0 +1,31 @@
+{
+  "category": "misc",
+  "target": "input.txt",
+  "evidence": [
+    {
+      "description": "Input identified and hashed",
+      "source": "text input",
+      "value": {
+        "file_type": "Unknown or text data",
+        "hashes": {
+          "md5": "b0f5f283040222902942d63b99dc87d4",
+          "sha1": "7aeb6401796bcc9e75e6d20623d6f9693c4a3dbe",
+          "sha256": "98e2140485ad2c8f64a36a4c9238ca4d4a9c8ecd80c6d25ec52e4d64db3b8e73"
+        }
+      },
+      "observed_at": "2026-10-07T19:49:37.894165+00:00"
+    }
+  ],
+  "findings": [],
+  "artifacts": [],
+  "indicators": [],
+  "confidence": 0,
+  "recommendations": [],
+  "tools_used": [],
+  "possible_flags": [],
+  "status": "UNSOLVED",
+  "flag_format": "CTF\\{.*\\}",
+  "session_id": "2026-10-08_011937_0d8a7a",
+  "blocked_operations": [],
+  "next_step": "No locally supported transformation produced a flag. Add challenge clues or provide a result with `ctfforge continue`."
+}

@@ -1,0 +1,60 @@
+{
+  "session_id": "2026-10-08_011937_ab9d9c",
+  "created_at": "2026-10-07T19:49:37.828724+00:00",
+  "status": "SOLVED",
+  "original_file": "input\\input.txt",
+  "source": "text input",
+  "category": "crypto",
+  "flag_format": "CTF\\{[^}]+\\}",
+  "operations": [
+    {
+      "input": "input.txt",
+      "operation": "From Base64",
+      "detected": "base64",
+      "confidence": 98,
+      "output": "decoded/01-base64.bin",
+      "sha256": "70d870bb2dac5ddfa6768770d61134eb8bf1b1a4d8ed8c141c7292413cba4d09"
+    }
+  ],
+  "artifacts": [
+    "decoded/01-base64.bin"
+  ],
+  "blocked_operations": [],
+  "recommendations": [],
+  "user_results": [],
+  "flags": [
+    "CTF{offline_success}"
+  ],
+  "flag_prefix": null,
+  "file_type": "Unknown or text data",
+  "hashes": {
+    "md5": "c73f8423c0a8d74d7eab0819f471b650",
+    "sha1": "9361ea1816f0375ae9656c0cca74f5f9b931d9b3",
+    "sha256": "a81d2ac465138df59c308b3c9a010b735b569438064e28caa4dfacdb21505a00"
+  },
+  "evidence": [
+    {
+      "description": "Input identified and hashed",
+      "source": "text input",
+      "value": {
+        "file_type": "Unknown or text data",
+        "hashes": {
+          "md5": "c73f8423c0a8d74d7eab0819f471b650",
+          "sha1": "9361ea1816f0375ae9656c0cca74f5f9b931d9b3",
+          "sha256": "a81d2ac465138df59c308b3c9a010b735b569438064e28caa4dfacdb21505a00"
+        }
+      },
+      "observed_at": "2026-10-07T19:49:37.840283+00:00"
+    },
+    {
+      "description": "Detected and locally decoded base64",
+      "source": "input.txt",
+      "value": {
+        "confidence": 98,
+        "output": "decoded/01-base64.bin"
+      },
+      "observed_at": "2026-10-07T19:49:37.846268+00:00"
+    }
+  ],
+  "report": "reports\\report.json"
+}
