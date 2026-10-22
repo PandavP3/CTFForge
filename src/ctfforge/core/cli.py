@@ -128,13 +128,14 @@ def main(argv: list[str] | None = None) -> int:
             print(json.dumps(result, indent=2, ensure_ascii=False))
             return 0 if state["status"] == "SOLVED" else 1
         if args.command == "detect":
-            return _detect(args.target, args.config)
-        if not args.target.is_file():
-            raise CTFForgeError(f"Target is not a file: {args.target}")
+            return _detect(args.target.expanduser(), args.config.expanduser() if args.config else None)
+        target = args.target.expanduser()
+        if not target.is_file():
+            raise CTFForgeError(f"Target is not a file: {target}")
         if args.command == "hash":
-            print(json.dumps({"target": str(args.target), "hashes": hash_file(args.target)}, indent=2))
+            print(json.dumps({"target": str(target), "hashes": hash_file(target)}, indent=2))
         elif args.command == "strings":
-            print("\n".join(extract_strings(args.target)))
+            print("\n".join(extract_strings(target)))
         return 0
     except (CTFForgeError, OSError) as exc:
         print(f"Error: {exc}", file=sys.stderr)
