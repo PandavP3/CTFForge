@@ -8,14 +8,13 @@ from pathlib import Path
 
 from .config import load_config
 from .exceptions import CTFForgeError
-from .file_detection import identify_file
 from .flag_format import compile_flag_pattern
-from .hashing import hash_file
 from .platform import platform_info
+from .registration import build_core_registry
 from .runner import find_tool
 from .solver import continue_session, solve
 from .solver_input import from_path, from_stdin, from_text
-from .strings import extract_strings
+from .tool import ToolContext, ToolResult
 
 OPTIONAL_TOOLS = {
     "Nmap": "nmap", "Tshark": "tshark", "Wireshark": "wireshark", "ExifTool": "exiftool",
@@ -98,6 +97,12 @@ def _detect(target: Path, config_path: Path | None) -> int:
     return 0
 
 
+def _run_common_tool(name: str, target: Path) -> ToolResult:
+    registry = build_core_registry()
+    handler = registry.resolve_handler("common", name)
+    return handler(ToolContext("common", name, {"file": target}))
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
@@ -133,9 +138,11 @@ def main(argv: list[str] | None = None) -> int:
         if not target.is_file():
             raise CTFForgeError(f"Target is not a file: {target}")
         if args.command == "hash":
-            print(json.dumps({"target": str(target), "hashes": hash_file(target)}, indent=2))
+            result = _run_common_tool("hash", target)
+            print(json.dumps({"target": result["target"], "hashes": result["hashes"]}, indent=2))
         elif args.command == "strings":
-            print("\n".join(extract_strings(target)))
+            result = _run_common_tool("strings", target)
+            print("\n".join(result["strings"]))
         return 0
     except (CTFForgeError, OSError) as exc:
         print(f"Error: {exc}", file=sys.stderr)
