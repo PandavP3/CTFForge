@@ -49,6 +49,21 @@ def build_parser() -> argparse.ArgumentParser:
         item.add_argument("target", type=Path)
         if command == "detect":
             item.add_argument("--config", type=Path, help="JSON configuration file")
+    crypto = sub.add_parser("crypto", help="cryptography challenge tools")
+    crypto_tools = crypto.add_subparsers(dest="crypto_tool", required=True)
+    xor = crypto_tools.add_parser("xor", help="analyze single-byte or keyed XOR data")
+    xor_source = xor.add_mutually_exclusive_group(required=True)
+    xor_source.add_argument("--file", type=Path, help="read binary data from a file (max 16 MiB)")
+    xor_source.add_argument("--input", help="use direct UTF-8 text input")
+    xor_source.add_argument("--hex", help="use hexadecimal input")
+    xor_key = xor.add_mutually_exclusive_group()
+    xor_key.add_argument("--key", help="known one-byte UTF-8 XOR key")
+    xor_key.add_argument("--repeat-key", help="UTF-8 repeating XOR key")
+    xor.add_argument("--limit", type=int, default=10, help="brute-force candidates to show (1-256)")
+    hashid = crypto_tools.add_parser("hashid", help="identify a likely hash format")
+    hashid_source = hashid.add_mutually_exclusive_group(required=True)
+    hashid_source.add_argument("--input", help="hash string to inspect")
+    hashid_source.add_argument("--file", type=Path, help="read ASCII hash text from a file")
     return parser
 
 
@@ -134,6 +149,17 @@ def main(argv: list[str] | None = None) -> int:
             return 0 if state["status"] == "SOLVED" else 1
         if args.command == "detect":
             return _detect(args.target.expanduser(), args.config.expanduser() if args.config else None)
+        if args.command == "crypto":
+            registry = build_core_registry()
+            handler = registry.resolve_handler("crypto", args.crypto_tool)
+            arguments = vars(args).copy()
+            arguments.pop("command", None)
+            arguments.pop("crypto_tool", None)
+            if args.crypto_tool == "hashid" and args.file is not None:
+                arguments["file"] = args.file
+            result = handler(ToolContext("crypto", args.crypto_tool, arguments))
+            print(json.dumps(result, indent=2, ensure_ascii=False))
+            return 0
         target = args.target.expanduser()
         if not target.is_file():
             raise CTFForgeError(f"Target is not a file: {target}")

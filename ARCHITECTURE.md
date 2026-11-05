@@ -6,7 +6,7 @@ Each category owns its implementation, optional dependencies, documentation, con
 
 Phase 1 provides common hashing, strings, flag detection, environment checks, configuration, and report primitives. Automatic category identification and cross-category orchestration are reserved for the integration phase.
 
-The guided solver foundation lives in core modules for input normalization, flag-format validation, sessions, conservative offline decoders, and recommendations. The CLI loads no category engine yet; its category value is persisted as the solver's priority for future category integrations. Solve sessions are local files under `sessions/` by default.
+The guided solver foundation lives in core modules for input normalization, flag-format validation, sessions, conservative offline decoders, and recommendations. The solver itself does not invoke registered category handlers yet; its category value is persisted as the solver's priority for future category integrations. Solve sessions are local files under `sessions/` by default.
 
 ## Tool contract and registry
 
@@ -37,3 +37,7 @@ def register_tools(registry):
 ```
 
 The category module and handler file are created as part of that category's implementation phase; no unimplemented category packages are pre-created. A future application startup step can call the registration functions for implemented categories, while the CLI and interactive mode use the same registry and dispatcher.
+
+## Crypto category
+
+`ctfforge.crypto.registration` registers two independent handlers: `xor` and `hashid`. The CLI builds the core registry and resolves only the requested handler. XOR analysis in `ctfforge.crypto.xor` supports bounded file, UTF-8 text, and hex input; absent a key it ranks single-byte XOR candidates, while explicit single-byte and repeating-key modes decrypt directly. `ctfforge.crypto.hashid` performs structural, heuristic identification for MD5/NTLM, SHA-1, SHA-256/384/512, bcrypt, and SHA-256/512 crypt strings. It does not perform cracking. No third-party Crypto dependency is required.

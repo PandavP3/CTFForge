@@ -34,7 +34,10 @@ def register_core_tools(registry: ToolRegistry) -> None:
 
 
 def build_core_registry() -> ToolRegistry:
-    """Return a fresh registry containing the implemented shared operations."""
+    """Return a fresh registry containing implemented shared and category tools."""
     registry = ToolRegistry()
     register_core_tools(registry)
+    from ctfforge.crypto.registration import register_crypto_tools
+
+    register_crypto_tools(registry)
     return registry

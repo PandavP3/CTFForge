@@ -2,7 +2,7 @@
 
 CTFForge is a modular, Linux-first toolkit for CTF competitions, practice labs, and authorized security education. It targets Python 3.10+ and supports Linux (including Kali) and Windows development.
 
-The repository contains the shared foundation and an initial generic offline solver. Category-specific tools are added as independent packages in later phases; no category implementation or category dependency is bundled into the core.
+The repository contains the shared foundation, an initial generic offline solver, and the first independent specialist category: Crypto. Category-specific implementations and dependencies remain isolated from the core.
 
 ## Install on Linux / Kali Linux
 
@@ -52,5 +52,20 @@ python -m ctfforge continue SESSION_ID --result 'decoded text from an external o
 ```
 
 Each solve stores a local session under `sessions/` with the original input, evidence, decoded artifacts, `session.json`, and a JSON report. Review the session directory before sharing it because it contains a copy of the supplied challenge. The current engine performs common offline text decoding (Base64, hex, URL/HTML/Unicode escapes, ROT13 when evidence supports it, gzip, and zlib), validates only the supplied flag expression, and records continuation results. Category-specific analysis and broader transformation support are not connected yet.
+
+## Crypto tools
+
+The initial Crypto category provides independent XOR analysis and heuristic hash-format identification. Both use only the Python standard library; install no additional Crypto packages:
+
+```bash
+ctfforge crypto xor --file challenge.bin
+ctfforge crypto xor --hex 1c0d1d --key K
+ctfforge crypto xor --input 'ciphertext text' --repeat-key ICE
+ctfforge crypto xor --hex 3c2d --limit 20
+ctfforge crypto hashid --input '5f4dcc3b5aa765d61d8327deb882cf99'
+ctfforge crypto hashid --file hash.txt
+```
+
+XOR accepts one file, UTF-8 text, or hexadecimal input. With no key it ranks single-byte XOR candidates; `--key` accepts one UTF-8 byte and `--repeat-key` accepts a UTF-8 repeating key. File and decoded hex input are limited to 16 MiB. Hash identification checks structure for MD5, NTLM, SHA-1/256/384/512, bcrypt, and SHA-256/512 crypt. It is heuristic, can return multiple candidates (for example MD5 and NTLM), and does not crack passwords.
 
 After installation, use `ctfforge` in place of `python -m ctfforge`. See [ARCHITECTURE.md](ARCHITECTURE.md) and [SECURITY.md](SECURITY.md).

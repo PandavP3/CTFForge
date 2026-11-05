@@ -16,7 +16,7 @@ from ctfforge.core.tool import ToolContext, ToolSpec
 def test_core_tools_register_and_are_discoverable():
     registry = build_core_registry()
 
-    assert registry.list_categories() == ("common",)
+    assert registry.list_categories() == ("common", "crypto")
     assert [spec.name for spec in registry.list_tools("common")] == ["hash", "identify", "strings"]
     assert registry.get_tool("common", "hash").usage == "ctfforge hash FILE"
 
