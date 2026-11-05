@@ -38,6 +38,8 @@ def build_core_registry() -> ToolRegistry:
     registry = ToolRegistry()
     register_core_tools(registry)
     from ctfforge.crypto.registration import register_crypto_tools
+    from ctfforge.steg.registration import register_steg_tools
 
     register_crypto_tools(registry)
+    register_steg_tools(registry)
     return registry

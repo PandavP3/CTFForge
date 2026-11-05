@@ -1,1 +1,1 @@
-# Phase steg dependencies will be added with its independent module.
+Pillow>=10.0

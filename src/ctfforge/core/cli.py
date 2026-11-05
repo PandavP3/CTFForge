@@ -64,6 +64,12 @@ def build_parser() -> argparse.ArgumentParser:
     hashid_source = hashid.add_mutually_exclusive_group(required=True)
     hashid_source.add_argument("--input", help="hash string to inspect")
     hashid_source.add_argument("--file", type=Path, help="read ASCII hash text from a file")
+    steg = sub.add_parser("steg", help="steganography artifact analysis tools")
+    steg_tools = steg.add_subparsers(dest="steg_tool", required=True)
+    metadata = steg_tools.add_parser("metadata", help="inspect image properties and metadata")
+    metadata.add_argument("--file", required=True, type=Path, help="image file to inspect")
+    structure = steg_tools.add_parser("structure", help="inspect file signatures and structure")
+    structure.add_argument("--file", required=True, type=Path, help="file to inspect")
     return parser
 
 
@@ -158,6 +164,12 @@ def main(argv: list[str] | None = None) -> int:
             if args.crypto_tool == "hashid" and args.file is not None:
                 arguments["file"] = args.file
             result = handler(ToolContext("crypto", args.crypto_tool, arguments))
+            print(json.dumps(result, indent=2, ensure_ascii=False))
+            return 0
+        if args.command == "steg":
+            registry = build_core_registry()
+            handler = registry.resolve_handler("steg", args.steg_tool)
+            result = handler(ToolContext("steg", args.steg_tool, {"file": args.file}))
             print(json.dumps(result, indent=2, ensure_ascii=False))
             return 0
         target = args.target.expanduser()

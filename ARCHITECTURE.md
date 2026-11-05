@@ -41,3 +41,7 @@ The category module and handler file are created as part of that category's impl
 ## Crypto category
 
 `ctfforge.crypto.registration` registers two independent handlers: `xor` and `hashid`. The CLI builds the core registry and resolves only the requested handler. XOR analysis in `ctfforge.crypto.xor` supports bounded file, UTF-8 text, and hex input; absent a key it ranks single-byte XOR candidates, while explicit single-byte and repeating-key modes decrypt directly. `ctfforge.crypto.hashid` performs structural, heuristic identification for MD5/NTLM, SHA-1, SHA-256/384/512, bcrypt, and SHA-256/512 crypt strings. It does not perform cracking. No third-party Crypto dependency is required.
+
+## Steganography category
+
+`ctfforge.steg.registration` registers `metadata` and `structure` without importing either handler. `ctfforge.steg.metadata` imports Pillow only when selected and inspects JPEG, PNG, TIFF, and WebP metadata; Pillow is isolated in `requirements/steg.txt`. `ctfforge.steg.structure` uses the standard library and existing signature detection for bounded checks, PNG chunk/CRC parsing, JPEG markers, common end markers, extension mismatches, and recognizable embedded signatures. Each analyzer limits input to 32 MiB and never executes or extracts detected content. Suspicious bytes can be benign and are not proof of steganography. LSB analysis is outside this phase.

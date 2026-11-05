@@ -68,4 +68,16 @@ ctfforge crypto hashid --file hash.txt
 
 XOR accepts one file, UTF-8 text, or hexadecimal input. With no key it ranks single-byte XOR candidates; `--key` accepts one UTF-8 byte and `--repeat-key` accepts a UTF-8 repeating key. File and decoded hex input are limited to 16 MiB. Hash identification checks structure for MD5, NTLM, SHA-1/256/384/512, bcrypt, and SHA-256/512 crypt. It is heuristic, can return multiple candidates (for example MD5 and NTLM), and does not crack passwords.
 
+## Steganography file inspection
+
+The initial Steganography category includes image metadata inspection and bounded file-structure analysis. Metadata supports JPEG/JPG, PNG, TIFF, and WebP through the optional Pillow dependency. Install it only when needed:
+
+```bash
+python -m pip install -r requirements/steg.txt
+ctfforge steg metadata --file image.jpg
+ctfforge steg structure --file suspicious.png
+```
+
+Metadata inspection reports dimensions, color mode, available EXIF and GPS fields, timestamps, and image text metadata without changing the source. Structure analysis checks signatures, extensions, PNG chunks and CRCs, JPEG markers, common endings, trailing bytes, and a small set of embedded signatures. Both tools bound processed file size to 32 MiB. A suspicious boundary or embedded signature is only an investigative clue; it does not prove hidden content or malicious activity. LSB analysis and automatic extraction are not included yet.
+
 After installation, use `ctfforge` in place of `python -m ctfforge`. See [ARCHITECTURE.md](ARCHITECTURE.md) and [SECURITY.md](SECURITY.md).
