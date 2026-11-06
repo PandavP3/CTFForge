@@ -119,6 +119,23 @@ def build_parser() -> argparse.ArgumentParser:
     logs = forensic_tools.add_parser("logs", help="analyze authentication and HTTP logs")
     logs.add_argument("--file", required=True, type=Path)
     logs.add_argument("--format", choices=("json", "csv"), default="json")
+    reverse = sub.add_parser("reverse", help="native static reverse-engineering tools")
+    reverse_tools = reverse.add_subparsers(dest="reverse_tool", required=True)
+    for name, description in (("info", "identify a binary format and architecture"),
+                              ("elf", "inspect ELF headers and tables"),
+                              ("pe", "inspect PE/COFF headers and sections"),
+                              ("symbols", "inspect ELF symbols or PE imports and exports")):
+        item = reverse_tools.add_parser(name, help=description)
+        item.add_argument("--file", required=True, type=Path)
+    strings = reverse_tools.add_parser("strings", help="extract printable strings with offsets")
+    strings.add_argument("--file", required=True, type=Path)
+    strings.add_argument("--min-length", type=int, default=4)
+    strings.add_argument("--encoding", choices=("ascii", "utf16le", "both"), default="both")
+    strings.add_argument("--limit", type=int, default=10000)
+    strings.add_argument("--output", type=Path, help="optional text export path; existing files are not overwritten")
+    entropy = reverse_tools.add_parser("entropy", help="calculate overall and block entropy")
+    entropy.add_argument("--file", required=True, type=Path)
+    entropy.add_argument("--block-size", type=int, default=4096)
     return parser
 
 
@@ -259,6 +276,15 @@ def main(argv: list[str] | None = None) -> int:
                 print(buffer.getvalue(), end="")
             else:
                 print(json.dumps(result, indent=2, ensure_ascii=False))
+            return 0
+        if args.command == "reverse":
+            registry = build_core_registry()
+            handler = registry.resolve_handler("reverse", args.reverse_tool)
+            arguments = vars(args).copy()
+            arguments.pop("command", None)
+            arguments.pop("reverse_tool", None)
+            result = handler(ToolContext("reverse", args.reverse_tool, arguments))
+            print(json.dumps(result, indent=2, ensure_ascii=False))
             return 0
         target = args.target.expanduser()
         if not target.is_file():

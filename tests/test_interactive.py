@@ -24,7 +24,8 @@ def test_interactive_command_is_registered_and_banner_menu_shows_availability():
     assert "[1] Cryptography" in output
     assert "[2] Web Exploitation" in output
     assert "[4] Digital Forensics" in output
-    assert "[5] Reverse Engineering  (Coming Soon)" in output
+    assert "[5] Reverse Engineering" in output
+    assert "[5] Reverse Engineering  (Coming Soon)" not in output
     assert "[15] Miscellaneous" in output
     assert "[15] Miscellaneous  (Coming Soon)" not in output
 
@@ -45,7 +46,7 @@ def test_unicode_banner_falls_back_to_ascii(monkeypatch):
 
 
 def test_invalid_empty_and_coming_soon_category_inputs():
-    _, output = run_with(["", "bad", "16", "5", "0"])
+    _, output = run_with(["", "bad", "16", "6", "0"])
     assert "Enter a menu number." in output
     assert "Invalid category selection." in output
     assert "That category is coming soon." in output

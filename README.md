@@ -145,6 +145,22 @@ Choose a category number, then a tool number. Use `b` to go back, `h` to return 
 
 ## Planned categories
 
-Hashing, strings, and file identification from the existing `common` registry category are available under Miscellaneous. Reverse Engineering, Binary Exploitation, OSINT, Network Analysis, Linux, Windows / AD, Mobile, Cloud, Wireless, and Blockchain are shown as `Coming Soon` until they have registered tools. No placeholder handlers are registered.
+Hashing, strings, and file identification from the existing `common` registry category are available under Miscellaneous. Binary Exploitation, OSINT, Network Analysis, Linux, Windows / AD, Mobile, Cloud, Wireless, and Blockchain are shown as `Coming Soon` until they have registered tools. No placeholder handlers are registered.
+
+## Reverse Engineering
+
+Native static reverse analyzers are available from both the `ctfforge interactive` menu and direct CLI commands:
+
+```bash
+ctfforge reverse info --file sample.bin
+ctfforge reverse strings --file sample.bin --min-length 5 --encoding both --limit 5000
+ctfforge reverse strings --file sample.bin --output strings.txt
+ctfforge reverse entropy --file sample.bin --block-size 4096
+ctfforge reverse elf --file program.elf
+ctfforge reverse pe --file program.exe
+ctfforge reverse symbols --file program.elf
+```
+
+The six tools identify binary format and architecture, extract ASCII/UTF-16LE strings with file offsets, calculate overall/block Shannon entropy, inspect ELF/PE structures, and list available ELF symbols or PE imports/exports. ELF supports 32/64-bit and little/big-endian files; PE supports PE32 and PE32+. Identification also recognizes common Mach-O signatures and archives, but does not deeply parse every format. PE import/export and ELF symbol data are reported only when their bounded structures exist. Extended ELF numbering, Mach-O universal slice tables, disassembly, and dynamic execution are not supported. Inputs are read-only and capped; extracted strings and high-entropy indicators are heuristics, not evidence that a file is malicious or encrypted. String exports refuse to overwrite existing files.
 
 After installation, use `ctfforge` in place of `python -m ctfforge`. See [ARCHITECTURE.md](ARCHITECTURE.md) and [SECURITY.md](SECURITY.md).

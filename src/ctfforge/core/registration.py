@@ -44,9 +44,11 @@ def build_core_registry() -> ToolRegistry:
     from ctfforge.steg.registration import register_steg_tools
     from ctfforge.web.registration import register_web_tools
     from ctfforge.forensics.registration import register_forensics_tools
+    from ctfforge.reverse.registration import register_reverse_tools
 
     register_crypto_tools(registry)
     register_steg_tools(registry)
     register_web_tools(registry)
     register_forensics_tools(registry)
+    register_reverse_tools(registry)
     return registry
