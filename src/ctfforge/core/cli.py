@@ -83,6 +83,26 @@ def build_parser() -> argparse.ArgumentParser:
     lsb.add_argument("--output", type=Path, help="write selected channel stream to a new binary file")
     lsb.add_argument("--text", action="store_true",
                      help="include extracted UTF-8 text for one selected channel (max 4096 characters)")
+    web = sub.add_parser("web", help="offline web analyzers and controlled HTTP helpers")
+    web_tools = web.add_subparsers(dest="web_tool", required=True)
+    jwt = web_tools.add_parser("jwt", help="decode and statically inspect a JWT (never verifies signature)")
+    jwt.add_argument("--token", required=True)
+    for name, label in (("headers", "analyze HTTP response headers"),
+                        ("cookies", "analyze Set-Cookie headers"),
+                        ("cors", "analyze CORS response headers")):
+        item = web_tools.add_parser(name, help=label)
+        source = item.add_mutually_exclusive_group(required=True)
+        source.add_argument("--url", help="fetch response headers from this URL")
+        source.add_argument("--header", action="append", help="supplied header; repeat as needed")
+    url_tool = web_tools.add_parser("url", help="inspect a URL without visiting it")
+    url_tool.add_argument("--input", required=True)
+    discover = web_tools.add_parser("discover", help="authorized, bounded HTTP path discovery")
+    discover.add_argument("--url", required=True)
+    discover.add_argument("--wordlist", required=True, type=Path)
+    discover.add_argument("--timeout", type=float, default=5.0)
+    discover.add_argument("--rate", type=float, default=2.0, help="requests per second (default: 2)")
+    discover.add_argument("--concurrency", type=int, default=2, help="maximum workers (1-5)")
+    discover.add_argument("--status", type=int, action="append", help="include status code; repeatable")
     return parser
 
 
@@ -186,6 +206,15 @@ def main(argv: list[str] | None = None) -> int:
             arguments.pop("command", None)
             arguments.pop("steg_tool", None)
             result = handler(ToolContext("steg", args.steg_tool, arguments))
+            print(json.dumps(result, indent=2, ensure_ascii=False))
+            return 0
+        if args.command == "web":
+            registry = build_core_registry()
+            handler = registry.resolve_handler("web", args.web_tool)
+            arguments = vars(args).copy()
+            arguments.pop("command", None)
+            arguments.pop("web_tool", None)
+            result = handler(ToolContext("web", args.web_tool, arguments))
             print(json.dumps(result, indent=2, ensure_ascii=False))
             return 0
         target = args.target.expanduser()

@@ -86,4 +86,19 @@ Metadata inspection reports dimensions, color mode, available EXIF and GPS field
 
 Use `--output` with one selected channel to write its stream as binary to a new file. Existing output files are never overwritten. `--text` includes valid UTF-8 extracted content in the JSON result, capped at 4096 characters; choose one channel. Results are bounded to 32 MiB input, 4 million pixels, 16 MiB output, and short previews. JPEG is intentionally rejected for basic LSB recovery because lossy compression changes pixel values and can destroy embedded bits. Other image transformations can also alter pixels. Readable text is a candidate for investigation, not proof that data was hidden. No extracted content is executed or opened.
 
+## Web security toolkit
+
+JWT and URL analysis are offline. Header, cookie, and CORS tools accept repeated `--header 'Name: value'` values or fetch headers from `--url`. Directory discovery sends bounded GET requests to a user-provided HTTP(S) target and local wordlist; use it only with explicit authorization.
+
+```bash
+ctfforge web jwt --token 'eyJ...'
+ctfforge web headers --url https://example.test
+ctfforge web cookies --url https://example.test
+ctfforge web cors --url https://example.test
+ctfforge web url --input 'https://example.test/a?x=1&x=2#section'
+ctfforge web discover --url https://lab.example.test --wordlist ./paths.txt
+```
+
+JWT signatures are never verified and signature bytes are not displayed. Header and CORS results are indicators, not proof of vulnerability or exploitability. Cookie values are redacted. URL analysis never visits URLs. HTTP uses standard-library urllib with TLS verification enabled, timeouts, and bounded reads; discovery defaults to two requests per second and two workers, has no recursion, and does not follow redirects. No additional dependency is required.
+
 After installation, use `ctfforge` in place of `python -m ctfforge`. See [ARCHITECTURE.md](ARCHITECTURE.md) and [SECURITY.md](SECURITY.md).
