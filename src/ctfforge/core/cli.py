@@ -103,6 +103,21 @@ def build_parser() -> argparse.ArgumentParser:
     discover.add_argument("--rate", type=float, default=2.0, help="requests per second (default: 2)")
     discover.add_argument("--concurrency", type=int, default=2, help="maximum workers (1-5)")
     discover.add_argument("--status", type=int, action="append", help="include status code; repeatable")
+    forensics = sub.add_parser("forensics", help="offline digital forensics tools")
+    forensic_tools = forensics.add_subparsers(dest="forensics_tool", required=True)
+    pcap = forensic_tools.add_parser("pcap", help="analyze PCAP or PCAPNG offline")
+    pcap.add_argument("--file", required=True, type=Path)
+    pcap.add_argument("--backend", choices=("native", "tshark", "auto"), default="auto")
+    pcap.add_argument("--format", choices=("json", "csv"), default="json")
+    carve = forensic_tools.add_parser("carve", help="identify and selectively recover embedded files")
+    carve.add_argument("--file", required=True, type=Path)
+    carve.add_argument("--output-dir", required=True, type=Path)
+    carve.add_argument("--extract-offset", type=lambda value: int(value, 0), action="append",
+                       help="explicit candidate offset to recover (decimal or 0x hex); repeatable")
+    carve.add_argument("--backend", choices=("native", "binwalk", "auto"), default="auto")
+    logs = forensic_tools.add_parser("logs", help="analyze authentication and HTTP logs")
+    logs.add_argument("--file", required=True, type=Path)
+    logs.add_argument("--format", choices=("json", "csv"), default="json")
     return parser
 
 
@@ -216,6 +231,30 @@ def main(argv: list[str] | None = None) -> int:
             arguments.pop("web_tool", None)
             result = handler(ToolContext("web", args.web_tool, arguments))
             print(json.dumps(result, indent=2, ensure_ascii=False))
+            return 0
+        if args.command == "forensics":
+            registry = build_core_registry()
+            handler = registry.resolve_handler("forensics", args.forensics_tool)
+            arguments = vars(args).copy()
+            arguments.pop("command", None)
+            arguments.pop("forensics_tool", None)
+            result = handler(ToolContext("forensics", args.forensics_tool, arguments))
+            if args.forensics_tool in ("logs", "pcap") and args.format == "csv":
+                import csv
+                import io
+                buffer = io.StringIO()
+                if args.forensics_tool == "logs":
+                    fields = ("line", "timestamp", "source_ip", "username", "event_type", "status", "path", "source")
+                    rows = result["timeline"]
+                else:
+                    fields = ("protocol", "endpoint_a", "endpoint_b", "packets")
+                    rows = result["observations"]["conversations"]
+                writer = csv.DictWriter(buffer, fieldnames=fields)
+                writer.writeheader()
+                writer.writerows({key: event.get(key) for key in fields} for event in rows)
+                print(buffer.getvalue(), end="")
+            else:
+                print(json.dumps(result, indent=2, ensure_ascii=False))
             return 0
         target = args.target.expanduser()
         if not target.is_file():

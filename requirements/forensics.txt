@@ -1,1 +1,3 @@
-# Phase forensics dependencies will be added with its independent module.
+# No Python dependencies required.
+# Optional external applications: TShark (Wireshark) and Binwalk.
+# CTFForge detects these executables but never installs them.

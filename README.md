@@ -101,4 +101,23 @@ ctfforge web discover --url https://lab.example.test --wordlist ./paths.txt
 
 JWT signatures are never verified and signature bytes are not displayed. Header and CORS results are indicators, not proof of vulnerability or exploitability. Cookie values are redacted. URL analysis never visits URLs. HTTP uses standard-library urllib with TLS verification enabled, timeouts, and bounded reads; discovery defaults to two requests per second and two workers, has no recursion, and does not follow redirects. No additional dependency is required.
 
+## Digital forensics
+
+Forensics provides offline PCAP/PCAPNG analysis, selective file carving, and authentication/syslog/Apache/Nginx log timelines:
+
+```bash
+ctfforge forensics pcap --file capture.pcap --backend auto --format json
+ctfforge forensics pcap --file capture.pcapng --backend native --format csv
+ctfforge forensics carve --file suspicious.bin --output-dir recovered
+ctfforge forensics carve --file suspicious.bin --output-dir recovered --extract-offset 0x120
+ctfforge forensics logs --file auth.log
+ctfforge forensics logs --file access.log --format csv
+```
+
+Native packet parsing supports Ethernet (including VLAN), IPv4/IPv6, TCP, UDP, basic DNS questions, and HTTP request-line metadata. It is not a complete protocol dissector. PCAP input is capped at 64 MiB and 100,000 packets. `--backend auto` uses TShark when available and otherwise reports its absence while providing the native summary; `--backend tshark` requires the executable. Install TShark using the official Wireshark instructions for your operating system; CTFForge never installs it.
+
+Carving scans at most 128 MiB and recognizes JPEG, PNG, PDF, and ZIP signatures. Recovery is opt-in by a candidate offset, limited to 20 files of at most 25 MiB each, uses unique exclusive-create filenames, and never executes recovered content. Binwalk is optional; CTFForge invokes only a signature scan and never requests extraction. Install Binwalk through your operating system's package manager or its official project instructions; it is not installed automatically.
+
+Log analysis preserves each original line and its 1-based line number. Detection patterns are investigative indicators and do not establish malicious intent. Source captures and logs are read only; findings may be incomplete for malformed, unsupported, or truncated formats. External tool output and runtime are bounded. No Python dependency is added.
+
 After installation, use `ctfforge` in place of `python -m ctfforge`. See [ARCHITECTURE.md](ARCHITECTURE.md) and [SECURITY.md](SECURITY.md).
