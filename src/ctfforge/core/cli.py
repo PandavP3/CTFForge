@@ -70,6 +70,19 @@ def build_parser() -> argparse.ArgumentParser:
     metadata.add_argument("--file", required=True, type=Path, help="image file to inspect")
     structure = steg_tools.add_parser("structure", help="inspect file signatures and structure")
     structure.add_argument("--file", required=True, type=Path, help="file to inspect")
+    lsb = steg_tools.add_parser(
+        "lsb", help="heuristically analyze lossless image bit planes for candidate data"
+    )
+    lsb.add_argument("--file", required=True, type=Path, help="lossless image to inspect")
+    lsb.add_argument("--channel", choices=("red", "green", "blue", "alpha", "all"),
+                     default="all", help="analyze channels independently (default: all)")
+    lsb.add_argument("--bit-plane", type=int, choices=range(8), default=0,
+                     help="channel bit plane 0-7 (default: least-significant plane 0)")
+    lsb.add_argument("--bit-order", choices=("msb", "lsb"), default="msb",
+                     help="pack first traversed pixel into byte's MSB (default) or LSB")
+    lsb.add_argument("--output", type=Path, help="write selected channel stream to a new binary file")
+    lsb.add_argument("--text", action="store_true",
+                     help="include extracted UTF-8 text for one selected channel (max 4096 characters)")
     return parser
 
 
@@ -169,7 +182,10 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "steg":
             registry = build_core_registry()
             handler = registry.resolve_handler("steg", args.steg_tool)
-            result = handler(ToolContext("steg", args.steg_tool, {"file": args.file}))
+            arguments = vars(args).copy()
+            arguments.pop("command", None)
+            arguments.pop("steg_tool", None)
+            result = handler(ToolContext("steg", args.steg_tool, arguments))
             print(json.dumps(result, indent=2, ensure_ascii=False))
             return 0
         target = args.target.expanduser()

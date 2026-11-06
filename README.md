@@ -70,14 +70,20 @@ XOR accepts one file, UTF-8 text, or hexadecimal input. With no key it ranks sin
 
 ## Steganography file inspection
 
-The initial Steganography category includes image metadata inspection and bounded file-structure analysis. Metadata supports JPEG/JPG, PNG, TIFF, and WebP through the optional Pillow dependency. Install it only when needed:
+The Steganography category includes image metadata inspection, bounded file-structure analysis, and heuristic LSB analysis. Metadata supports JPEG/JPG, PNG, TIFF, and WebP through the optional Pillow dependency. LSB analysis supports PNG, TIFF, BMP, GIF, and lossless WebP. Install Pillow only when needed:
 
 ```bash
 python -m pip install -r requirements/steg.txt
 ctfforge steg metadata --file image.jpg
 ctfforge steg structure --file suspicious.png
+ctfforge steg lsb --file hidden.png
+ctfforge steg lsb --file hidden.png --channel red --bit-plane 0
+ctfforge steg lsb --file hidden.png --channel green --bit-order lsb --output extracted.bin
+ctfforge steg lsb --file hidden.png --channel blue --text
 ```
 
-Metadata inspection reports dimensions, color mode, available EXIF and GPS fields, timestamps, and image text metadata without changing the source. Structure analysis checks signatures, extensions, PNG chunks and CRCs, JPEG markers, common endings, trailing bytes, and a small set of embedded signatures. Both tools bound processed file size to 32 MiB. A suspicious boundary or embedded signature is only an investigative clue; it does not prove hidden content or malicious activity. LSB analysis and automatic extraction are not included yet.
+Metadata inspection reports dimensions, color mode, available EXIF and GPS fields, timestamps, and image text metadata without changing the source. Structure analysis checks signatures, extensions, PNG chunks and CRCs, JPEG markers, common endings, trailing bytes, and a small set of embedded signatures. Both tools bound processed file size to 32 MiB. LSB analysis independently checks red, green, blue, and (when present) alpha channels, with bit planes 0 through 7. Pixels are traversed row-major; default byte packing is MSB-first (first pixel becomes the byte's high bit), and `--bit-order lsb` reverses that packing order. The default checks plane 0 and all available channels. Scores use printable-byte ratio, UTF-8 validity, common readable markers, and null-byte ratio; they rank candidates only.
+
+Use `--output` with one selected channel to write its stream as binary to a new file. Existing output files are never overwritten. `--text` includes valid UTF-8 extracted content in the JSON result, capped at 4096 characters; choose one channel. Results are bounded to 32 MiB input, 4 million pixels, 16 MiB output, and short previews. JPEG is intentionally rejected for basic LSB recovery because lossy compression changes pixel values and can destroy embedded bits. Other image transformations can also alter pixels. Readable text is a candidate for investigation, not proof that data was hidden. No extracted content is executed or opened.
 
 After installation, use `ctfforge` in place of `python -m ctfforge`. See [ARCHITECTURE.md](ARCHITECTURE.md) and [SECURITY.md](SECURITY.md).

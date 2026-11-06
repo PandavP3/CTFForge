@@ -13,9 +13,10 @@ def test_steg_tools_register_and_discover():
     registry = ToolRegistry()
     register_steg_tools(registry)
 
-    assert [spec.name for spec in registry.list_tools("steg")] == ["metadata", "structure"]
+    assert [spec.name for spec in registry.list_tools("steg")] == ["lsb", "metadata", "structure"]
     assert registry.get_tool("steg", "metadata").optional_dependencies == ("PIL",)
     assert registry.get_tool("steg", "structure").optional_dependencies == ()
+    assert registry.get_tool("steg", "lsb").optional_dependencies == ("PIL",)
 
 
 def test_steg_handlers_resolve_lazily(monkeypatch):
@@ -28,7 +29,7 @@ def test_steg_handlers_resolve_lazily(monkeypatch):
         return actual_import(module_name)
 
     monkeypatch.setattr(registry_module, "import_module", track_import)
-    assert [spec.name for spec in registry.list_tools("steg")] == ["metadata", "structure"]
+    assert [spec.name for spec in registry.list_tools("steg")] == ["lsb", "metadata", "structure"]
     assert imported == []
     registry.resolve_handler("steg", "structure")
     assert imported == ["ctfforge.steg.structure"]
