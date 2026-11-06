@@ -135,13 +135,15 @@ The launcher lists all 15 planned categories. Registered categories are selectab
 [2] Web Exploitation
 [3] Steganography
 [4] Digital Forensics
-[5] Reverse Engineering  (Coming Soon)
+[5] Reverse Engineering
 ...
 [15] Miscellaneous
 [0] Exit
 ```
 
 Choose a category number, then a tool number. Use `b` to go back, `h` to return home, and `0` to exit where shown. After a tool runs, choose to run it again, return to its category, go home, or exit. At an input prompt, `:back`, `:home`, or `:exit` navigates without running the tool. Ctrl+C and end-of-input close cleanly. Tool inputs, defaults, validation, usage, and help come from registered metadata; execution calls the same handlers as direct commands. Existing direct commands remain available, for example `ctfforge crypto xor --input TEXT` and `ctfforge forensics logs --file auth.log`.
+
+Reverse Engineering lists ten registry-backed tools: info, strings, entropy, ELF, PE, symbols, disassembly, instruction analysis, function metadata, and packer indicators.
 
 ## Planned categories
 
@@ -159,8 +161,16 @@ ctfforge reverse entropy --file sample.bin --block-size 4096
 ctfforge reverse elf --file program.elf
 ctfforge reverse pe --file program.exe
 ctfforge reverse symbols --file program.elf
+ctfforge reverse disasm --file sample.bin --arch x86 --bits 64 --offset 0x1000
+ctfforge reverse instructions --file sample.bin --arch x86 --bits 64 --details
+ctfforge reverse functions --file program.elf
+ctfforge reverse packer --file sample.exe
 ```
 
-The six tools identify binary format and architecture, extract ASCII/UTF-16LE strings with file offsets, calculate overall/block Shannon entropy, inspect ELF/PE structures, and list available ELF symbols or PE imports/exports. ELF supports 32/64-bit and little/big-endian files; PE supports PE32 and PE32+. Identification also recognizes common Mach-O signatures and archives, but does not deeply parse every format. PE import/export and ELF symbol data are reported only when their bounded structures exist. Extended ELF numbering, Mach-O universal slice tables, disassembly, and dynamic execution are not supported. Inputs are read-only and capped; extracted strings and high-entropy indicators are heuristics, not evidence that a file is malicious or encrypted. String exports refuse to overwrite existing files.
+The ten tools identify binary format and architecture, extract ASCII/UTF-16LE strings with file offsets, calculate overall/block Shannon entropy, inspect ELF/PE structures, list available ELF symbols or PE imports/exports, disassemble bounded ranges, summarize decoded instruction groups, report symbol-derived functions, and identify static packer indicators. ELF supports 32/64-bit and little/big-endian files; PE supports PE32 and PE32+. Identification also recognizes common Mach-O signatures and archives, but does not deeply parse every format. Extended ELF numbering and Mach-O universal slice tables are unsupported.
+
+Disassembly and instruction analysis use optional Capstone. Install it explicitly with `python -m pip install -r requirements/reverse.txt`; it is never installed automatically. Supported architecture families are x86 (16/32/64-bit), ARM/Thumb, ARM64/AArch64, and MIPS, subject to the installed Capstone build. ELF/PE metadata supplies architecture only when reliable. Raw binaries require explicit architecture and bitness; ARM requires `--mode arm|thumb`, and ARM/MIPS raw data requires explicit endianness. Each decode reads at most 1 MiB and decodes at most 10,000 instructions (defaults: 4096 bytes and 1000 instructions). Example: `ctfforge reverse disasm --file sample.bin --arch x86 --bits 64 --offset 0x1000 --max-bytes 4096 --max-instructions 1000`.
+
+Instruction summaries count only decoded instructions and report remaining undecoded/unprocessed bytes separately. Static counts do not establish runtime behavior. Function analysis reports only ELF `STT_FUNC` symbols and PE exports; stripped files may have no function results, and arbitrary function boundaries are not inferred. Packer output separates known signatures from heuristic section, permission, entry-point, and entropy indicators. High entropy alone is not proof of packing, encryption, or malware. Analysis is read-only: files are never executed or unpacked. Optional JSON exports use exclusive creation and refuse to overwrite existing files. Interactive mode discovers all ten tools from the registry.
 
 After installation, use `ctfforge` in place of `python -m ctfforge`. See [ARCHITECTURE.md](ARCHITECTURE.md) and [SECURITY.md](SECURITY.md).

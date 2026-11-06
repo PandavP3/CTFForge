@@ -136,6 +136,25 @@ def build_parser() -> argparse.ArgumentParser:
     entropy = reverse_tools.add_parser("entropy", help="calculate overall and block entropy")
     entropy.add_argument("--file", required=True, type=Path)
     entropy.add_argument("--block-size", type=int, default=4096)
+    for name, description in (("disasm", "disassemble a bounded binary range"),
+                              ("instructions", "summarize decoded instructions")):
+        item = reverse_tools.add_parser(name, help=description)
+        item.add_argument("--file", required=True, type=Path)
+        item.add_argument("--arch", choices=("x86", "arm", "arm64", "mips"))
+        item.add_argument("--bits", type=int, choices=(16, 32, 64))
+        item.add_argument("--endian", choices=("little", "big"))
+        item.add_argument("--mode", choices=("arm", "thumb", "mips32", "mips64"))
+        item.add_argument("--offset", type=lambda value: int(value, 0), default=0)
+        item.add_argument("--address", "--virtual-address", dest="address", type=lambda value: int(value, 0))
+        item.add_argument("--max-bytes", type=int, default=4096)
+        item.add_argument("--max-instructions", type=int, default=1000)
+        item.add_argument("--output", type=Path, help="optional exclusive-create JSON export")
+        if name == "instructions":
+            item.add_argument("--details", action="store_true")
+    for name, description in (("functions", "list symbol-derived functions"),
+                              ("packer", "inspect static packer indicators")):
+        item = reverse_tools.add_parser(name, help=description)
+        item.add_argument("--file", required=True, type=Path)
     return parser
 
 

@@ -1,1 +1,2 @@
-# Phase reverse dependencies will be added with its independent module.
+# Optional dependency for static reverse disassembly only. Never installed automatically.
+capstone>=5.0,<6
