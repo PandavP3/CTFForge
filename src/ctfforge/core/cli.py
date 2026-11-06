@@ -30,6 +30,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="ctfforge", description="Modular tools for authorized CTF and lab analysis")
     sub = parser.add_subparsers(dest="command")
     sub.add_parser("doctor", help="check Python and optional external tools")
+    sub.add_parser("interactive", help="launch the menu-driven CTFForge terminal interface")
     solve_parser = sub.add_parser("solve", help="analyze a challenge artifact offline-first")
     solve_parser.add_argument("--category", required=True, choices=CATEGORIES)
     solve_parser.add_argument("--flag-format", help="expected flag regular expression")
@@ -179,6 +180,9 @@ def main(argv: list[str] | None = None) -> int:
         parser.print_help()
         return 0
     try:
+        if args.command == "interactive":
+            from .interactive import run_interactive
+            return run_interactive()
         if args.command == "doctor":
             return _doctor()
         if args.command == "solve":

@@ -1,7 +1,7 @@
 """Registration for existing shared core operations."""
 
 from .registry import ToolRegistry
-from .tool import ToolSpec
+from .tool import InteractiveInput as I, ToolSpec
 
 
 def register_core_tools(registry: ToolRegistry) -> None:
@@ -15,6 +15,7 @@ def register_core_tools(registry: ToolRegistry) -> None:
                 description="Calculate MD5, SHA1, and SHA256 hashes for a file.",
                 handler_ref="ctfforge.core.tool_adapters:hash_tool",
                 usage="ctfforge hash FILE",
+                interactive_inputs=(I("file", "File path to hash", "path", must_exist=True),),
             ),
             ToolSpec(
                 category="common",
@@ -22,12 +23,14 @@ def register_core_tools(registry: ToolRegistry) -> None:
                 description="Extract printable ASCII strings from a file.",
                 handler_ref="ctfforge.core.tool_adapters:strings_tool",
                 usage="ctfforge strings FILE",
+                interactive_inputs=(I("file", "File path to extract strings from", "path", must_exist=True),),
             ),
             ToolSpec(
                 category="common",
                 name="identify",
                 description="Identify a file from its leading signature bytes.",
                 handler_ref="ctfforge.core.tool_adapters:identify_tool",
+                interactive_inputs=(I("file", "File path to identify", "path", must_exist=True),),
             ),
         ),
     )

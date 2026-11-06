@@ -120,4 +120,31 @@ Carving scans at most 128 MiB and recognizes JPEG, PNG, PDF, and ZIP signatures.
 
 Log analysis preserves each original line and its 1-based line number. Detection patterns are investigative indicators and do not establish malicious intent. Source captures and logs are read only; findings may be incomplete for malformed, unsupported, or truncated formats. External tool output and runtime are bounded. No Python dependency is added.
 
+## Interactive terminal launcher
+
+Start the menu with:
+
+```text
+ctfforge interactive
+```
+
+The launcher lists all 15 planned categories. Registered categories are selectable; categories without registered tools are marked `Coming Soon`.
+
+```text
+[1] Cryptography
+[2] Web Exploitation
+[3] Steganography
+[4] Digital Forensics
+[5] Reverse Engineering  (Coming Soon)
+...
+[15] Miscellaneous
+[0] Exit
+```
+
+Choose a category number, then a tool number. Use `b` to go back, `h` to return home, and `0` to exit where shown. After a tool runs, choose to run it again, return to its category, go home, or exit. At an input prompt, `:back`, `:home`, or `:exit` navigates without running the tool. Ctrl+C and end-of-input close cleanly. Tool inputs, defaults, validation, usage, and help come from registered metadata; execution calls the same handlers as direct commands. Existing direct commands remain available, for example `ctfforge crypto xor --input TEXT` and `ctfforge forensics logs --file auth.log`.
+
+## Planned categories
+
+Hashing, strings, and file identification from the existing `common` registry category are available under Miscellaneous. Reverse Engineering, Binary Exploitation, OSINT, Network Analysis, Linux, Windows / AD, Mobile, Cloud, Wireless, and Blockchain are shown as `Coming Soon` until they have registered tools. No placeholder handlers are registered.
+
 After installation, use `ctfforge` in place of `python -m ctfforge`. See [ARCHITECTURE.md](ARCHITECTURE.md) and [SECURITY.md](SECURITY.md).
