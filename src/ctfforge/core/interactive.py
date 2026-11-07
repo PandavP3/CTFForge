@@ -254,10 +254,9 @@ def run_interactive(*, registry: ToolRegistry | None = None,
                 if tool.help:
                     emit(tool.help)
                 if not tool.interactive_inputs:
-                    emit("This tool has no interactive input definition yet.")
-                    state = "category"
-                    continue
-                arguments = collect_inputs(tool, read, emit)
+                    arguments = {}
+                else:
+                    arguments = collect_inputs(tool, read, emit)
                 try:
                     handler = registry.resolve_handler(tool.category, tool.name)
                     result = handler(ToolContext(tool.category, tool.name, arguments))

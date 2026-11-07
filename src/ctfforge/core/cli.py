@@ -119,7 +119,7 @@ def build_parser() -> argparse.ArgumentParser:
     logs = forensic_tools.add_parser("logs", help="analyze authentication and HTTP logs")
     logs.add_argument("--file", required=True, type=Path)
     logs.add_argument("--format", choices=("json", "csv"), default="json")
-    reverse = sub.add_parser("reverse", help="native static reverse-engineering tools")
+    reverse = sub.add_parser("reverse", help="native and optional external reverse-engineering tools")
     reverse_tools = reverse.add_subparsers(dest="reverse_tool", required=True)
     for name, description in (("info", "identify a binary format and architecture"),
                               ("elf", "inspect ELF headers and tables"),
@@ -155,6 +155,18 @@ def build_parser() -> argparse.ArgumentParser:
                               ("packer", "inspect static packer indicators")):
         item = reverse_tools.add_parser(name, help=description)
         item.add_argument("--file", required=True, type=Path)
+    reverse_tools.add_parser("external-status", help="check optional file/readelf/objdump availability")
+    external_file = reverse_tools.add_parser("external-file", help="identify a file with external file utility")
+    external_file.add_argument("--file", required=True, type=Path)
+    external_file.add_argument("--max-output", type=int, default=1_000_000)
+    external_elf = reverse_tools.add_parser("external-elf", help="analyze an ELF file with readelf")
+    external_elf.add_argument("--file", required=True, type=Path)
+    external_elf.add_argument("--mode", choices=("header", "program-headers", "sections", "symbols", "dynamic", "relocations"), default="header")
+    external_elf.add_argument("--max-output", type=int, default=1_000_000)
+    external_objdump = reverse_tools.add_parser("external-objdump", help="analyze a binary with objdump")
+    external_objdump.add_argument("--file", required=True, type=Path)
+    external_objdump.add_argument("--mode", choices=("file-headers", "section-headers", "disassembly", "symbol-table", "private-headers"), default="file-headers")
+    external_objdump.add_argument("--max-output", type=int, default=1_000_000)
     return parser
 
 

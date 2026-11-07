@@ -207,8 +207,9 @@ def test_entropy_known_distributions_and_block_offsets(tmp_path):
 
 def test_cli_registration_registry_and_interactive_tool_listing(tmp_path, capsys):
     registry = build_core_registry()
-    assert [spec.name for spec in registry.list_tools("reverse")] == ["disasm", "elf", "entropy", "functions", "info", "instructions", "packer", "pe", "strings", "symbols"]
-    assert all(spec.interactive_inputs for spec in registry.list_tools("reverse"))
+    assert [spec.name for spec in registry.list_tools("reverse")] == ["disasm", "elf", "entropy", "external-elf", "external-file", "external-objdump", "external-status", "functions", "info", "instructions", "packer", "pe", "strings", "symbols"]
+    assert all(spec.interactive_inputs for spec in registry.list_tools("reverse")
+               if spec.name != "external-status")
     path = tmp_path / "input.elf"
     path.write_bytes(make_elf(64))
     assert main(["reverse", "info", "--file", str(path)]) == 0
@@ -218,7 +219,7 @@ def test_cli_registration_registry_and_interactive_tool_listing(tmp_path, capsys
     run_interactive(registry=registry, input_fn=lambda prompt: next(choices), output=output.append)
     rendered = "\n".join(output)
     assert "[5] Reverse Engineering" in rendered
-    assert "[1] disasm —" in rendered and "[10] symbols —" in rendered
+    assert "[1] disasm —" in rendered and "[14] symbols —" in rendered
 
 
 def test_all_six_direct_cli_tools(tmp_path, capsys):
