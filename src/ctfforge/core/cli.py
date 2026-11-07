@@ -167,6 +167,14 @@ def build_parser() -> argparse.ArgumentParser:
     external_objdump.add_argument("--file", required=True, type=Path)
     external_objdump.add_argument("--mode", choices=("file-headers", "section-headers", "disassembly", "symbol-table", "private-headers"), default="file-headers")
     external_objdump.add_argument("--max-output", type=int, default=1_000_000)
+    reverse_tools.add_parser("yara-status", help="check optional yara-python availability")
+    yara_validate = reverse_tools.add_parser("yara-validate", help="compile and validate a YARA rules file")
+    yara_validate.add_argument("--rules", required=True, type=Path)
+    yara_scan = reverse_tools.add_parser("yara", help="scan one file with a supplied YARA rules file")
+    yara_scan.add_argument("--file", required=True, type=Path)
+    yara_scan.add_argument("--rules", required=True, type=Path)
+    yara_scan.add_argument("--timeout", type=int, default=10, help="YARA scan timeout in seconds (1-60)")
+    yara_scan.add_argument("--output", type=Path, help="optional JSON export; existing files are never overwritten")
     return parser
 
 

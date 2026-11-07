@@ -177,7 +177,7 @@ def test_registry_cli_interactive_registration_and_export_safety(tmp_path, monke
     names = {item.name for item in registry.list_tools("reverse")}
     assert {"disasm", "instructions", "functions", "packer"} <= names
     assert all(registry.get_tool("reverse", name).interactive_inputs
-               for name in names if name != "external-status")
+               for name in names if name not in ("external-status", "yara-status"))
     sample = tmp_path / "raw.bin"
     sample.write_bytes(b"\x90\xc3")
     assert main(["reverse", "disasm", "--file", str(sample), "--arch", "x86", "--bits", "64"]) == 0

@@ -207,9 +207,9 @@ def test_entropy_known_distributions_and_block_offsets(tmp_path):
 
 def test_cli_registration_registry_and_interactive_tool_listing(tmp_path, capsys):
     registry = build_core_registry()
-    assert [spec.name for spec in registry.list_tools("reverse")] == ["disasm", "elf", "entropy", "external-elf", "external-file", "external-objdump", "external-status", "functions", "info", "instructions", "packer", "pe", "strings", "symbols"]
+    assert [spec.name for spec in registry.list_tools("reverse")] == ["disasm", "elf", "entropy", "external-elf", "external-file", "external-objdump", "external-status", "functions", "info", "instructions", "packer", "pe", "strings", "symbols", "yara", "yara-status", "yara-validate"]
     assert all(spec.interactive_inputs for spec in registry.list_tools("reverse")
-               if spec.name != "external-status")
+               if spec.name not in ("external-status", "yara-status"))
     path = tmp_path / "input.elf"
     path.write_bytes(make_elf(64))
     assert main(["reverse", "info", "--file", str(path)]) == 0

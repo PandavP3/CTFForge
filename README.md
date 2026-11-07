@@ -143,7 +143,17 @@ The launcher lists all 15 planned categories. Registered categories are selectab
 
 Choose a category number, then a tool number. Use `b` to go back, `h` to return home, and `0` to exit where shown. After a tool runs, choose to run it again, return to its category, go home, or exit. At an input prompt, `:back`, `:home`, or `:exit` navigates without running the tool. Ctrl+C and end-of-input close cleanly. Tool inputs, defaults, validation, usage, and help come from registered metadata; execution calls the same handlers as direct commands. Existing direct commands remain available, for example `ctfforge crypto xor --input TEXT` and `ctfforge forensics logs --file auth.log`.
 
-Reverse Engineering lists ten registry-backed tools: info, strings, entropy, ELF, PE, symbols, disassembly, instruction analysis, function metadata, and packer indicators.
+The native Reverse Engineering toolkit has ten registry-backed tools: info, strings, entropy, ELF, PE, symbols, disassembly, instruction analysis, function metadata, and packer indicators. Optional external utilities and the YARA tools below are registered alongside them.
+
+YARA is available as an optional signature-matching addition:
+
+```bash
+ctfforge reverse yara-status
+ctfforge reverse yara-validate --rules rules/malware.yar
+ctfforge reverse yara --file suspicious.exe --rules rules/malware.yar --timeout 10 --output results.json
+```
+
+Install optional Python support with `python -m pip install -r requirements/reverse.txt`; CTFForge does not install it automatically. Only compile rules you trust or have reviewed. Validation compiles one rule file without scanning. Scanning takes exactly one target and one rule file, uses yara-python's scan timeout, and never executes or changes the target. Rules are limited to 5 MiB, targets to 128 MiB, and scan timeouts to 1–60 seconds. The timeout does not limit rule compilation. Results include rule name, namespace, tags, metadata, matching string identifiers and offsets (not matched bytes), counts, version, duration, and truncation flags. JSON exports refuse to overwrite files. A match is an indicator based on the selected rules, not proof that a file is malware or infected. Community rules are not downloaded automatically.
 
 ## Planned categories
 
