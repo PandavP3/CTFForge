@@ -118,4 +118,16 @@ def register_reverse_tools(registry: ToolRegistry) -> None:
                      I("timeout", "Scan timeout in seconds", "int", default=10, minimum=1, maximum=60),
                      I("output", "Optional JSON result path", "path", required=False),
                  )),
+        ToolSpec("triage", "reverse", "Run bounded native binary triage and correlate explainable evidence.",
+                 "ctfforge.reverse.triage:analyze",
+                 usage="ctfforge reverse triage --file FILE [--profile quick|standard] [--rules FILE] [--skip-yara] [--timeout 10] [--output JSON]",
+                 help="Static, bounded assessment only; no target execution or automatic external-tool use. Results are not a malware verdict.",
+                 interactive_inputs=(
+                     I("file", "Target binary file", "path", must_exist=True),
+                     I("profile", "Analysis profile", choices=("quick", "standard"), default="standard"),
+                     I("rules", "Optional YARA rules file", "path", required=False, must_exist=True),
+                     I("skip_yara", "Skip YARA even when rules are supplied", "bool", default=False),
+                     I("timeout", "YARA scan timeout in seconds", "int", default=10, minimum=1, maximum=60),
+                     I("output", "Optional JSON report path", "path", required=False),
+                 )),
     ))

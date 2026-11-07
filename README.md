@@ -155,6 +155,22 @@ ctfforge reverse yara --file suspicious.exe --rules rules/malware.yar --timeout 
 
 Install optional Python support with `python -m pip install -r requirements/reverse.txt`; CTFForge does not install it automatically. Only compile rules you trust or have reviewed. Validation compiles one rule file without scanning. Scanning takes exactly one target and one rule file, uses yara-python's scan timeout, and never executes or changes the target. Rules are limited to 5 MiB, targets to 128 MiB, and scan timeouts to 1–60 seconds. The timeout does not limit rule compilation. Results include rule name, namespace, tags, metadata, matching string identifiers and offsets (not matched bytes), counts, version, duration, and truncation flags. JSON exports refuse to overwrite files. A match is an indicator based on the selected rules, not proof that a file is malware or infected. Community rules are not downloaded automatically.
 
+### Automated binary triage
+
+`reverse triage` orchestrates the existing native analyzers, retains component status and provenance, then correlates a small set of explicit indicators. It does not run Capstone or external utilities automatically.
+
+```bash
+ctfforge reverse triage --file suspicious.exe
+ctfforge reverse triage --file suspicious.exe --profile quick
+ctfforge reverse triage --file suspicious.exe --rules rules/reviewed.yar --timeout 10
+ctfforge reverse triage --file suspicious.exe --rules rules/reviewed.yar --output reports/triage.json
+ctfforge reverse triage --file suspicious.exe --skip-yara
+```
+
+Both profiles are limited to one readable regular file of at most 64 MiB. `quick` runs signature/structure identity, bounded ASCII and UTF-16LE strings, overall and block entropy, and native packer indicators. `standard` adds the applicable native ELF or PE structure and symbol/import/export analysis. A YARA scan runs only when a rule file is supplied and `--skip-yara` is absent; its existing 5 MiB rule, 128 MiB target, 1–60 second scan-timeout, and output-count limits apply. Review rules before compilation; the scan timeout does not constrain compilation. No disassembly or external utility is invoked.
+
+The report includes SHA-256, component statuses, bounded evidence with source and IDs, correlations referencing those IDs, truncation and skipped states, and an ordinal risk level. Rules correlate high entropy with a writable/executable section, packer signature with a packer-like section name, YARA with listed strings, sensitive imports with listed strings, and extension mismatch with detected PE/ELF identity. The deterministic score uses each evidence item at most once: a single YARA match contributes at most two points; high entropy alone contributes one. Levels are informational (0), low (1–2), medium (3–4), high (5–6), and critical (7+); unavailable required analyses can make a zero-score result inconclusive. The score is not a probability. Exported JSON uses exclusive creation, is capped at 8 MiB, and refuses to overwrite the target, rules, or an existing report. A triage result is an investigative assessment, not a definitive malware verdict.
+
 ## Planned categories
 
 Hashing, strings, and file identification from the existing `common` registry category are available under Miscellaneous. Binary Exploitation, OSINT, Network Analysis, Linux, Windows / AD, Mobile, Cloud, Wireless, and Blockchain are shown as `Coming Soon` until they have registered tools. No placeholder handlers are registered.

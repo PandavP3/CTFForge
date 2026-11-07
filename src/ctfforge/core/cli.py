@@ -175,6 +175,13 @@ def build_parser() -> argparse.ArgumentParser:
     yara_scan.add_argument("--rules", required=True, type=Path)
     yara_scan.add_argument("--timeout", type=int, default=10, help="YARA scan timeout in seconds (1-60)")
     yara_scan.add_argument("--output", type=Path, help="optional JSON export; existing files are never overwritten")
+    triage = reverse_tools.add_parser("triage", help="run bounded binary triage and evidence correlation")
+    triage.add_argument("--file", required=True, type=Path, help="single binary file to analyze (maximum 64 MiB)")
+    triage.add_argument("--profile", choices=("quick", "standard"), default="standard")
+    triage.add_argument("--rules", type=Path, help="optional local YARA rules file (review rules before use)")
+    triage.add_argument("--skip-yara", action="store_true", help="skip YARA even if --rules is supplied")
+    triage.add_argument("--timeout", type=int, default=10, help="YARA scan timeout in seconds (1-60)")
+    triage.add_argument("--output", type=Path, help="optional exclusive-create JSON report path")
     return parser
 
 
